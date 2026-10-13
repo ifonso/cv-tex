@@ -1,0 +1,59 @@
+% =============================================================================
+% Currículo — Afonso Lucas
+% -----------------------------------------------------------------------------
+% Compilar com LuaLaTeX (necessário para o motor de layout em Lua):
+%     latexmk            (usa .latexmkrc)
+%   ou
+%     lualatex main.tex
+%
+% Estrutura:
+%   core/        motor de layout (página, fontes, cores, modelo de parágrafo)
+%   components/  componentes reutilizáveis (seção, experiência, skill, ...)
+%   content/     o conteúdo do currículo — edite aqui
+%   assets/      ícones
+%   fonts/       fontes
+% =============================================================================
+
+\documentclass{article}
+
+% --- Núcleo ------------------------------------------------------------------
+\input{core/page}
+\input{core/colors}
+\input{core/paragraph}
+\input{core/fonts}
+
+\usepackage{graphicx}
+\usepackage[hidelinks, pdfusetitle]{hyperref}
+\urlstyle{same}
+
+\hypersetup{
+  pdftitle  = {Currículo AI \& Software},
+  pdfauthor = {Afonso Lucas},
+}
+
+% --- Componentes -------------------------------------------------------------
+\input{components/header}
+\input{components/section}
+\input{components/bullets}
+\input{components/experience}
+\input{components/award}
+\input{components/publication}
+\input{components/skill}
+\input{components/certificate}
+\input{components/education}
+
+% --- Opções de layout --------------------------------------------------------
+\cvJobDateInlinefalse  % período abaixo do cargo (true = à direita, na linha do cargo)
+\cvSectionRuletrue     % linha fina abaixo dos títulos de seção
+
+\begin{document}
+
+\input{content/header}
+\input{content/experience}
+\input{content/awards}
+\input{content/publications}
+\input{content/skills}
+\input{content/certificates}
+\input{content/education}
+
+\end{document}
