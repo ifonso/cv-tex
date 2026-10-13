@@ -1,0 +1,40 @@
+# Saída do build (latexmk usa build/)
+build/
+
+# PDF gerado fora de build/ (ex.: lualatex main.tex direto na raiz)
+/main.pdf
+
+# Arquivos auxiliares do LaTeX
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex
+*.synctex.gz
+*.synctex(busy)
+*.synctex.gz(busy)
+*.toc
+*.xdv
+
+# Calibri é proprietária — não versionar
+fonts/calibri*.ttf
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Telefone — fica só na máquina local (modelo em content/phone.example.tex)
+content/phone.tex
