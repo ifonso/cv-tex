@@ -1,0 +1,43 @@
+% =============================================================================
+% components/experience.tex — experiência profissional
+% -----------------------------------------------------------------------------
+%   \cvJob{<cargo>}{<organização>}{<período>}
+%     \cvItem{...}
+%     \cvItem{...}
+%
+% Gera:  **Cargo** - Organização          (Noto Serif Bengali 11)
+%        (Período)                        (Calibri 10, #666666)
+%
+% Opção (em main.tex):
+%   \cvJobDateInlinefalse   período numa linha própria, abaixo do cargo (padrão)
+%   \cvJobDateInlinetrue    período à direita, na 1ª linha do cargo
+%                           (só recomendado se todos os cargos couberem em 1 linha)
+% =============================================================================
+
+\newif\ifcvJobDateInline
+\cvJobDateInlinefalse
+
+% distância mínima entre o texto do cargo e o período
+\newlength\cvJobDateGap  \setlength\cvJobDateGap{12bp}
+
+\cvDefineStyle{job-title}{
+  metrics = serif, font = \cvSerif, size = 11, line-height = 1.3,
+  before = 12bp, after = 2bp, align = justify}
+
+\cvDefineStyle{job-period}{
+  size = 10, line-height = 1.0, after = 6bp, color = cvMuted}
+
+\newsavebox\cvJobDateBox
+
+\newcommand\cvJob[3]{%
+  \ifcvJobDateInline
+    \sbox\cvJobDateBox{\cvSans\cvFontSize{10}\color{cvMuted}(#3)}%
+    \cvParagraph[style=job-title, after=6bp,
+                 right-indent=\dimexpr\wd\cvJobDateBox+\cvJobDateGap\relax]{%
+      \rlap{\hskip\dimexpr\linewidth-\wd\cvJobDateBox\relax
+            \usebox\cvJobDateBox}%
+      \textbf{#1} - #2}%
+  \else
+    \cvParagraph[style=job-title]{\textbf{#1} - #2}%
+    \cvParagraph[style=job-period]{(#3)}%
+  \fi}

@@ -1,0 +1,18 @@
+% =============================================================================
+% components/certificate.tex — certificados
+% -----------------------------------------------------------------------------
+%   \cvCertificate[<espaço antes, padrão 8bp>]{<nome>}{<ano>}{<emissor>}
+%
+% Gera:  **Nome do certificado**     (Calibri Bold 11)
+%        2024 – Emissor.             (Calibri 9, #999999)
+% =============================================================================
+
+\cvDefineStyle{certificate}{
+  size = 11, line-height = 1.2}
+
+\cvDefineStyle{certificate-detail}{
+  size = 9, line-height = 1.15, color = cvFaint}
+
+\NewDocumentCommand\cvCertificate{ O{8bp} m m m }{%
+  \cvParagraph[style=certificate, before=#1]{\textbf{#2}}%
+  \cvParagraph[style=certificate-detail]{#3 – #4}}

@@ -1,0 +1,18 @@
+% =============================================================================
+% components/skill.tex — habilidades técnicas
+% -----------------------------------------------------------------------------
+%   \cvSkill[<cor do texto>][<cor do marcador>]{<categoria>}{<itens>}
+%
+% Gera:  ● **Categoria:** itens
+% As cores são opcionais (padrão: cvText; o marcador herda a cor do texto).
+% Recuo e marcador iguais aos de \cvItem (components/bullets.tex).
+% =============================================================================
+
+\cvDefineStyle{skill}{
+  size = 11, line-height = 1.15, after = 8bp, align = justify,
+  indent = \cvItemIndent, marker-offset = \cvItemMarkerOffset}
+
+\NewDocumentCommand\cvSkill{ O{cvText} O{#1} m m }{%
+  \cvParagraph[style=skill, color=#1,
+               marker={\cvBullet{\cvItemMarkerSize}[#2]}]{%
+    \textbf{#3} #4}}

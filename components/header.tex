@@ -1,0 +1,61 @@
+% =============================================================================
+% components/header.tex — cabeçalho (nome, título, contatos, local, resumo)
+% -----------------------------------------------------------------------------
+%   \cvName{<nome>}
+%   \cvHeadline{<título profissional>}
+%   \begin{cvContacts}
+%     \cvContact{<ícone>}{<url>}{<rótulo>} \cvContactSep
+%     \cvContactText[<url opcional>]{<texto>}
+%   \end{cvContacts}
+%   \cvLocation{<texto>}
+%   \cvSummary{<parágrafo>}
+%
+% <ícone> é o nome de um arquivo em assets/icons/ (sem extensão).
+% =============================================================================
+
+\cvDefineStyle{name}{
+  metrics = serif, font = \cvSerifMedium, size = 20, line-height = 1.0,
+  after = 2bp, color = cvText}
+
+\cvDefineStyle{headline}{
+  size = 12, line-height = 1.0, after = 6bp, color = cvMuted}
+
+\cvDefineStyle{contacts}{
+  size = 10, line-height = 1.0, after = 12bp, color = cvMuted}
+
+\cvDefineStyle{location}{
+  size = 11, line-height = 1.0, after = 8bp, color = cvMuted}
+
+\cvDefineStyle{summary}{
+  size = 11, line-height = 1.2, after = 16bp, align = justify}
+
+\newcommand\cvName[1]{\cvParagraph[style=name]{#1}}
+\newcommand\cvHeadline[1]{\cvParagraph[style=headline]{#1}}
+\newcommand\cvLocation[1]{\cvParagraph[style=location]{#1}}
+\newcommand\cvSummary[1]{\cvParagraph[style=summary]{#1}}
+
+% Ícones: 8.25bp, com 1.5bp de respiro de cada lado.
+\newlength\cvIconSize      \setlength\cvIconSize{8.25bp}
+\newlength\cvIconPadding   \setlength\cvIconPadding{1.5bp}
+
+\newcommand\cvIcon[1]{%
+  \hspace*{\cvIconPadding}%
+  \includegraphics[width=\cvIconSize,height=\cvIconSize]{assets/icons/#1}%
+  \hspace*{\cvIconPadding}}
+
+\NewDocumentEnvironment{cvContacts}{+b}
+  {\cvParagraph[style=contacts]{\ignorespaces#1\unskip}}{}
+
+% Ícone + espaço + link sublinhado
+\newcommand\cvContact[3]{%
+  \cvIcon{#1}\nobreakspace
+  \href{#2}{\textcolor{cvLink}{\cvUnderline{#3}}}}
+
+% Texto cinza, sem sublinhado; link opcional (ex.: telefone com tel:)
+\NewDocumentCommand\cvContactText{ o m }{%
+  \IfNoValueTF{#1}
+    {\textcolor{cvMuted}{#2}}
+    {\href{#1}{\textcolor{cvMuted}{#2}}}}
+
+% Separador " | "
+\newcommand\cvContactSep{\unskip\nobreakspace|\space\ignorespaces}

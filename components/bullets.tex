@@ -1,0 +1,19 @@
+% =============================================================================
+% components/bullets.tex — itens com marcador "●"
+% -----------------------------------------------------------------------------
+%   \cvItem{<texto>}         item de lista (usado em experiências)
+%
+% Medidas compartilhadas por todas as listas (experiência, publicações,
+% habilidades): texto recuado 21bp, marcador (Arial 8pt) a 3bp da margem.
+% =============================================================================
+
+\newlength\cvItemIndent        \setlength\cvItemIndent{21bp}
+\newlength\cvItemMarkerOffset  \setlength\cvItemMarkerOffset{3bp}
+\newcommand\cvItemMarkerSize{8}
+
+\cvDefineStyle{item}{
+  size = 11, line-height = 1.15, after = 8bp, align = justify,
+  indent = \cvItemIndent, marker-offset = \cvItemMarkerOffset,
+  marker = \cvBullet{\cvItemMarkerSize}}
+
+\newcommand\cvItem[1]{\cvParagraph[style=item]{#1}}

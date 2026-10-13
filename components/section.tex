@@ -1,0 +1,31 @@
+% =============================================================================
+% components/section.tex — títulos de seção
+% -----------------------------------------------------------------------------
+%   \cvSection{<título>}    título (Noto Serif Bengali SemiBold 14, #434343)
+%   \cvSectionSpacer        linha vazia com o mesmo estilo do título
+%                           (no Docs: um "Título 1" vazio entre seções)
+%
+% Opção (em main.tex):
+%   \cvSectionRuletrue / \cvSectionRulefalse   linha fina abaixo do título
+% =============================================================================
+
+\newif\ifcvSectionRule
+\cvSectionRuletrue
+
+\newlength\cvSectionRuleOffset     \setlength\cvSectionRuleOffset{5bp}   % abaixo da linha de base
+\newlength\cvSectionRuleThickness  \setlength\cvSectionRuleThickness{0.5bp}
+
+\cvDefineStyle{section}{
+  metrics = serif, font = \cvSerifSemiBold, size = 14, line-height = 1.0,
+  before = 18bp, after = 6bp, color = cvHeading,
+  keep-with-next = true, heading = true}
+
+\newcommand\cvSectionRuleMark{%
+  \ifcvSectionRule
+    \rlap{\color{cvRule}\vrule width \linewidth
+          height -\cvSectionRuleOffset
+          depth  \dimexpr\cvSectionRuleOffset+\cvSectionRuleThickness\relax}%
+  \fi}
+
+\newcommand\cvSection[1]{\cvParagraph[style=section]{\cvSectionRuleMark#1}}
+\newcommand\cvSectionSpacer{\cvParagraph[style=section, keep-with-next=false]{\null}}

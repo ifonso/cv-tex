@@ -1,0 +1,19 @@
+% =============================================================================
+% components/award.tex — prêmios e reconhecimentos
+% -----------------------------------------------------------------------------
+%   \cvAward[<espaço antes>]{<ano>}{<prêmio>}{<instituição>}
+%
+% Gera (mesmo formato dos certificados):
+%   **Prêmio**                  (Calibri Bold 11)
+%   2022 – Instituição          (Calibri 9, #999999)
+% =============================================================================
+
+\cvDefineStyle{award}{
+  size = 11, line-height = 1.2}
+
+\cvDefineStyle{award-detail}{
+  size = 9, line-height = 1.15, color = cvFaint}
+
+\NewDocumentCommand\cvAward{ O{8bp} m m m }{%
+  \cvParagraph[style=award, before=#1]{\textbf{#3}}%
+  \cvParagraph[style=award-detail]{#2 – #4}}

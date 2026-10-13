@@ -1,0 +1,21 @@
+% =============================================================================
+% components/publication.tex — artigos publicados
+% -----------------------------------------------------------------------------
+%   \cvPublication{<título>}{<periódico>}{<url do DOI>}
+%
+% Gera (item com marcador, como \cvItem):
+%   ● Título do artigo.
+%     Periódico                      (#999999)
+%     https://doi.org/...            (#1155CC, sublinhado)
+% =============================================================================
+
+\cvDefineStyle{publication}{
+  size = 11, line-height = 1.45, before = 10bp, align = justify,
+  indent = \cvItemIndent, marker-offset = \cvItemMarkerOffset,
+  marker = \cvBullet{\cvItemMarkerSize}}
+
+\newcommand\cvPublication[3]{%
+  \cvParagraph[style=publication]{%
+    #1\cvBreak
+    \textcolor{cvFaint}{#2}\cvBreak
+    \href{#3}{\textcolor{cvDoi}{\cvUnderline{\detokenize{#3}}}}}}

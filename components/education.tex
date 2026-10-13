@@ -1,0 +1,23 @@
+% =============================================================================
+% components/education.tex — formação acadêmica
+% -----------------------------------------------------------------------------
+%   \cvEducation{<curso>}{<período e local>}{<instituição>}
+%
+% Gera:  **Curso**                   (Calibri Bold 11)
+%        2022 - 2027, Brasil         (Calibri 9, #999999)
+%        Instituição                 (Calibri 11)
+% =============================================================================
+
+\cvDefineStyle{education}{
+  size = 11, line-height = 1.05, after = 7bp}
+
+\cvDefineStyle{education-detail}{
+  size = 9, line-height = 1.15, color = cvFaint}
+
+\cvDefineStyle{education-school}{
+  size = 11, line-height = 1.15}
+
+\newcommand\cvEducation[3]{%
+  \cvParagraph[style=education]{\textbf{#1}}%
+  \cvParagraph[style=education-detail]{#2}%
+  \cvParagraph[style=education-school]{#3}}
