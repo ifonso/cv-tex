@@ -1,0 +1,48 @@
+% =============================================================================
+% core/page.tex — geometria da página
+% -----------------------------------------------------------------------------
+% Medidas extraídas do PDF exportado pelo Google Docs (1 bp = 1 pt do Docs).
+% =============================================================================
+
+\RequirePackage[
+  paperwidth  = 596bp,
+  paperheight = 842bp,
+  left        = 56.69bp,   % 2 cm
+  top         = 28.35bp,   % 1 cm
+  textwidth   = 481.9bp,
+  textheight  = 786.55bp,  % margem inferior de 27.1bp
+  headheight  = 0pt,
+  headsep     = 0pt,
+  footskip    = 0pt,
+  nomarginpar,
+]{geometry}
+
+\pagestyle{empty}
+\raggedbottom
+
+% Nada de espaçamento automático do TeX: todo espaço vertical é controlado
+% pelo modelo de parágrafo em core/paragraph.tex.
+\setlength\parindent{0pt}
+\setlength\parskip{0pt}
+\setlength\topskip{0pt}
+\setlength\baselineskip{0pt}
+\setlength\lineskip{0pt}
+\setlength\lineskiplimit{0pt}
+\setlength\normallineskip{0pt}
+\setlength\normallineskiplimit{0pt}
+\setlength\maxdepth{0pt}
+\makeatletter
+\setlength\@maxdepth{0pt}
+\makeatother
+
+% Sem hifenização (o Docs não hifeniza) e espaçamento uniforme.
+\frenchspacing
+\hyphenpenalty    = 10000
+\exhyphenpenalty  = 10000
+\hbadness         = 10000
+\hfuzz            = 1bp
+
+% Linhas órfãs/viúvas = 2 (padrão do Google Docs).
+\clubpenalty      = 10000
+\widowpenalty     = 10000
+\interlinepenalty = 0

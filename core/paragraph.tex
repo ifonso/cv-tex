@@ -1,0 +1,200 @@
+% =============================================================================
+% core/paragraph.tex — modelo de parágrafo do Google Docs
+% -----------------------------------------------------------------------------
+% Todo bloco do currículo é um \cvParagraph. Ele reproduz as regras do Docs:
+%
+%  * altura de cada linha = line-height × (asc + desc) × tamanho da fonte;
+%    a linha de base fica a "asc × tamanho" do topo e a sobra fica embaixo;
+%  * espaço entre parágrafos = max(espaço depois do anterior,
+%                                  espaço antes do próximo);
+%  * quebra de linha gulosa + justificação esticando só os espaços
+%    (core/linebreak.lua);
+%  * logo após um título de seção, o "espaço antes" do bloco é ignorado.
+%
+% Uso:
+%   \cvParagraph[<chaves>]{<conteúdo>}
+%   \cvDefineStyle{<nome>}{<chaves>}   e depois  \cvParagraph[style=<nome>]{...}
+%
+% Chaves:
+%   style          estilo previamente definido (pode ser sobrescrito depois)
+%   metrics        sans | serif           métricas verticais da fonte principal
+%   font           comando de fonte       ex.: \cvSans, \cvSerifSemiBold
+%   size           número (pt do Docs)    ex.: 11
+%   line-height    número                 ex.: 1.15
+%   before, after  dimensão               espaço antes/depois do parágrafo
+%   align          justify | left
+%   indent         dimensão               recuo esquerdo do texto
+%   right-indent   dimensão               recuo direito do texto
+%   marker         conteúdo               marcador (ex.: \cvBullet{8})
+%   marker-offset  dimensão               posição do marcador (da margem)
+%   color          nome de cor
+%   keep-with-next booleano               não separar do próximo bloco
+%   heading        booleano               marca o bloco como título de seção
+% =============================================================================
+
+\newattribute\cvSnapAttr
+\directlua{dofile("core/linebreak.lua")}
+\directlua{dofile("core/snap.lua")}
+
+\newdimen\cvLineAbove
+\newdimen\cvLineBelow
+\newcount\cvGreedy
+
+\ExplSyntaxOn
+
+% --- Métricas ----------------------------------------------------------------
+\NewDocumentCommand \cvDefineMetrics { m m m }
+  {
+    \tl_const:cn { c__cv_asc_#1_tl }  {#2}
+    \tl_const:cn { c__cv_desc_#1_tl } {#3}
+  }
+
+% --- Chaves ------------------------------------------------------------------
+\tl_new:N   \l__cv_metrics_tl
+\tl_new:N   \l__cv_font_tl
+\tl_new:N   \l__cv_size_tl
+\tl_new:N   \l__cv_lh_tl
+\dim_new:N  \l__cv_before_dim
+\dim_new:N  \l__cv_after_dim
+\bool_new:N \l__cv_justify_bool
+\dim_new:N  \l__cv_indent_dim
+\dim_new:N  \l__cv_right_indent_dim
+\tl_new:N   \l__cv_marker_tl
+\dim_new:N  \l__cv_marker_offset_dim
+\tl_new:N   \l__cv_color_tl
+\bool_new:N \l__cv_keep_bool
+\bool_new:N \l__cv_heading_bool
+\bool_new:N \g__cv_after_heading_bool
+
+\keys_define:nn { cv / par }
+  {
+    style          .code:n       = \keys_set:nv { cv / par } { l__cv_style_#1_tl } ,
+    metrics        .tl_set:N     = \l__cv_metrics_tl ,
+    metrics        .initial:n    = sans ,
+    font           .tl_set:N     = \l__cv_font_tl ,
+    font           .initial:n    = \cvSans ,
+    size           .tl_set:N     = \l__cv_size_tl ,
+    size           .initial:n    = 11 ,
+    line-height    .tl_set:N     = \l__cv_lh_tl ,
+    line-height    .initial:n    = 1.15 ,
+    before         .dim_set:N    = \l__cv_before_dim ,
+    after          .dim_set:N    = \l__cv_after_dim ,
+    align          .choice: ,
+    align / justify .code:n      = \bool_set_true:N  \l__cv_justify_bool ,
+    align / left    .code:n      = \bool_set_false:N \l__cv_justify_bool ,
+    align          .initial:n    = left ,
+    indent         .dim_set:N    = \l__cv_indent_dim ,
+    right-indent   .dim_set:N    = \l__cv_right_indent_dim ,
+    marker         .tl_set:N     = \l__cv_marker_tl ,
+    marker-offset  .dim_set:N    = \l__cv_marker_offset_dim ,
+    color          .tl_set:N     = \l__cv_color_tl ,
+    color          .initial:n    = cvText ,
+    keep-with-next .bool_set:N   = \l__cv_keep_bool ,
+    heading        .bool_set:N   = \l__cv_heading_bool ,
+  }
+
+\NewDocumentCommand \cvDefineStyle { m m }
+  { \tl_gset:cn { l__cv_style_#1_tl } {#2} }
+
+% --- Parágrafo ---------------------------------------------------------------
+\cs_new_protected:Npn \__cv_set_metrics:
+  {
+    \fp_set:Nn \l_tmpa_fp { \tl_use:c { c__cv_asc_  \l__cv_metrics_tl _tl } }
+    \fp_set:Nn \l_tmpb_fp { \tl_use:c { c__cv_desc_ \l__cv_metrics_tl _tl } }
+    \dim_set:Nn \cvLineAbove
+      { \fp_to_dim:n { \l_tmpa_fp * (\l__cv_size_tl) * 1bp } }
+    \dim_set:Nn \cvLineBelow
+      {
+        \fp_to_dim:n
+          { (\l__cv_lh_tl) * (\l_tmpa_fp + \l_tmpb_fp) * (\l__cv_size_tl) * 1bp }
+        - \cvLineAbove
+      }
+  }
+
+\NewDocumentCommand \cvParagraph { O{} +m }
+  {
+    \par
+    \group_begin:
+      \keys_set:nn { cv / par } {#1}
+      % espaço antes (colapsa com o "depois" do bloco anterior); o primeiro
+      % bloco comum depois de um título não usa o próprio "espaço antes"
+      \bool_lazy_and:nnF
+        { \g__cv_after_heading_bool }
+        { ! \l__cv_heading_bool }
+        { \addvspace { \l__cv_before_dim } }
+      \bool_gset_eq:NN \g__cv_after_heading_bool \l__cv_heading_bool
+      \__cv_set_metrics:
+      \cvGreedy = 1 \scan_stop:
+      \skip_set:Nn \leftskip { \l__cv_indent_dim }
+      \bool_if:NTF \l__cv_justify_bool
+        { \skip_set:Nn \rightskip { \l__cv_right_indent_dim } }
+        { \skip_set:Nn \rightskip { \l__cv_right_indent_dim plus 1fil } }
+      \skip_set:Nn \parfillskip { 0pt plus 1fil }
+      \l__cv_font_tl
+      \cvFontSize { \l__cv_size_tl }
+      \noindent
+      % a cor é aplicada em modo horizontal: assim nenhum nó de cor vai
+      % para a lista vertical (o que impediria o colapso dos espaços)
+      \group_begin:
+        \color { \l__cv_color_tl }
+        \tl_if_empty:NF \l__cv_marker_tl
+          {
+            \hbox_overlap_left:n
+              {
+                \hbox_to_wd:nn { \l__cv_indent_dim - \l__cv_marker_offset_dim }
+                  { \l__cv_marker_tl \hfil }
+              }
+          }
+        #2
+      \group_end:
+      \par
+      \bool_if:NT \l__cv_keep_bool { \nobreak }
+      \addvspace { \l__cv_after_dim }
+    \group_end:
+  }
+
+% --- Utilitários inline ------------------------------------------------------
+
+% Seleciona o tamanho de fonte como o Docs: o tamanho em pixels (96 dpi) é
+% truncado para múltiplos de 1/64 px antes de posicionar os glifos
+% (11pt = 14.667px -> 14.65625px). Isso deixa os avanços ~0.07% menores.
+\NewDocumentCommand \cvFontSize { m }
+  {
+    \fontsize
+      { \fp_eval:n { floor( (#1) * 256 / 3 ) * 3 / 256 } bp }
+      { 0pt }
+    \selectfont
+  }
+
+% Quebra de linha manual (Shift+Enter no Docs).
+\NewDocumentCommand \cvBreak { }
+  { \unskip \nobreak \hfil \penalty -10000 \scan_stop: }
+
+% Sublinhado do Docs: traço de 1bp, na cor do texto, ~0.09em abaixo da linha
+% de base; extremidades e topo encaixados em pontos inteiros (core/snap.lua).
+\box_new:N \l__cv_ul_box
+\NewDocumentCommand \cvUnderline { m }
+  {
+    \mode_leave_vertical:
+    \hbox_set:Nn \l__cv_ul_box {#1}
+    \hbox_overlap_right:n
+      {
+        \setattribute \cvSnapAttr { 1 }
+        \tex_vrule:D
+          width  \box_wd:N \l__cv_ul_box
+          height \dim_eval:n { -0.09em + 0.5bp }
+          depth  \dim_eval:n {  0.09em + 0.5bp }
+      }
+    \box_use:N \l__cv_ul_box
+  }
+
+% Marcador "●" do Docs (Arial), no tamanho indicado em pt.
+\NewDocumentCommand \cvBullet { m O{} }
+  {
+    \group_begin:
+      \tl_if_empty:nF {#2} { \color {#2} }
+      \cvBulletFont \cvFontSize {#1} ●
+    \group_end:
+  }
+
+\ExplSyntaxOff

@@ -1,0 +1,69 @@
+% =============================================================================
+% core/fonts.tex — famílias tipográficas
+% -----------------------------------------------------------------------------
+%   \cvSans            Calibri (Regular / Bold / Italic / Bold Italic)
+%   \cvSerif           Noto Serif Bengali Regular  (\bfseries = SemiBold)
+%   \cvSerifMedium     Noto Serif Bengali Medium   (nome no cabeçalho)
+%   \cvSerifSemiBold   Noto Serif Bengali SemiBold (títulos de seção)
+%   \cvBulletFont      Arial (apenas o marcador ●)
+%
+% Calibri é proprietária. Ordem de busca:
+%   1. fonts/calibri.ttf, calibrib.ttf, calibrii.ttf, calibriz.ttf
+%   2. Calibri instalada no sistema
+%   3. Carlito (incluída em fonts/) — clone métrico do Calibri: mesmas
+%      larguras e alturas, portanto a mesma diagramação.
+%
+% O Docs aplica kerning, mas não ligaduras (fi, fl...): Ligatures=NoCommon.
+% =============================================================================
+
+\RequirePackage{fontspec}
+
+\defaultfontfeatures{Ligatures={TeX,NoCommon}, Kerning=On}
+
+% --- Calibri -----------------------------------------------------------------
+% \cv@sans{<comando>} aplica a mesma escolha a \cvSans e à fonte padrão.
+\makeatletter
+\chardef\cv@sanssource=0 % 0 = Carlito, 1 = fonts/calibri*.ttf, 2 = sistema
+\IfFileExists{fonts/calibri.ttf}
+  {\chardef\cv@sanssource=1 }
+  {\IfFontExistsTF{Calibri}{\chardef\cv@sanssource=2 }{}}
+\def\cv@sans#1{%
+  \ifcase\cv@sanssource
+    #1{Carlito}[
+      Path = fonts/, Extension = .ttf,
+      UprightFont = *-Regular, BoldFont = *-Bold,
+      ItalicFont = *-Italic, BoldItalicFont = *-BoldItalic]%
+  \or
+    #1{calibri}[
+      Path = fonts/, Extension = .ttf,
+      UprightFont = *, BoldFont = *b, ItalicFont = *i, BoldItalicFont = *z]%
+  \or
+    #1{Calibri}%
+  \fi}
+\cv@sans{\newfontfamily\cvSans}
+\cv@sans{\setmainfont}
+\makeatother
+
+% --- Noto Serif Bengali ------------------------------------------------------
+\newfontfamily\cvSerif{NotoSerifBengali}[
+  Path = fonts/, Extension = .ttf, Script = Latin,
+  UprightFont = *-Regular, BoldFont = *-SemiBold]
+\newfontfamily\cvSerifMedium{NotoSerifBengali-Medium}[
+  Path = fonts/, Extension = .ttf, Script = Latin]
+\newfontfamily\cvSerifSemiBold{NotoSerifBengali-SemiBold}[
+  Path = fonts/, Extension = .ttf, Script = Latin]
+
+% --- Arial (marcador) --------------------------------------------------------
+\IfFontExistsTF{Arial}{%
+  \newfontfamily\cvBulletFont{Arial}
+}{%
+  \newfontfamily\cvBulletFont{Arimo-Regular}[Path = fonts/, Extension = .ttf]
+}
+
+% Métricas verticais usadas pelo Google Docs (em unidades de "em"):
+%   ascendente = espaço acima da linha de base
+%   descendente = espaço abaixo (antes do line-height)
+% Calibri:            (hhea.ascender + lineGap) / upm = 1988/2048 ; 512/2048
+% Noto Serif Bengali: 1092/1000 ; 502/1000
+\cvDefineMetrics{sans} {0.970703125}{0.25}
+\cvDefineMetrics{serif}{1.092}{0.502}
